@@ -29,10 +29,17 @@ setopt share_history          # share command history data
 # initialize prompt
 autoload -Uz promptinit && promptinit && prompt powerlevel10k
 
-eval "$(zoxide init zsh)"
+if type zoxide > /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-alias ls="ls --color"
+if type eza > /dev/null; then
+  alias ls="eza"
+else 
+  alias ls="ls --color"
+fi
 alias ll="ls -la"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
