@@ -1,0 +1,18 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+yay -S --needed \
+ alacritty\
+ tmux\
+ zsh\
+ zsh-antidote\
+ otf-monaspace-nerd\
+ eza\
+ zoxide\
+ fzf
+
+{{ else if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+brew install \
+ alacritty\
+ tmux
+{{ end -}}

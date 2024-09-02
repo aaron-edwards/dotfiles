@@ -6,6 +6,9 @@
 - alacritty
 
 ## Requirements
+
+**Note:** The onchange script will attempt to install dependacies
+ 
 - zsh
     - [antidote](https://getantidote.github.io/)
         - Arch `yay -S zsh-antidote`
@@ -13,8 +16,7 @@
     - eza (optional)
     - zoxide (optional)
     - fzf (optional)
-    
-- [alacitty](https://github.com/mattmc3/antidote)
+    - [alacitty](https://github.com/mattmc3/antidote)
     - tmux
         - The alacritty config assumes tmux will be installed in /usr/bin in linux or /opt/homebrew/bin/ on mac
         - Arch `pacman -S tmux`
