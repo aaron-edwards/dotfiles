@@ -1,0 +1,24 @@
+[edit]
+command = "nvim"
+
+[data]
+name = "Aaron Edwards"
+email = {{ if eq .chezmoi.os "darwin"}} "aarone@squareup.com" {{ else }} "edwards.aaronmark@gmail.com" {{ end   }}
+
+[data.packages]
+common = [
+  "alacritty",
+  "eza",
+  "fzf",
+  "neovim",
+  "tmux",
+  "zoxide"
+]
+arch = [
+  "otf-monaspace-nerd",
+  "zsh",
+  "zsh-antidote"
+]
+darwin = [
+  "antidote",
+]
