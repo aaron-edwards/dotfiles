@@ -15,7 +15,7 @@ opt.number = true           -- Show line number
 opt.showmatch = true        -- Highlight matching parenthesis
 opt.termguicolors = true    -- Enable 24-bit RGB colors
 --opt.signcolumn = "yes"
-vim.o.list = true           -- Show leading spaces and other "hidden" chars
+--vim.o.list = true           -- Show leading spaces and other "hidden" chars
 vim.opt.listchars:append("lead:⋅,extends:…,precedes:…,nbsp:␣")
 
 -----------------------------------------------------------
