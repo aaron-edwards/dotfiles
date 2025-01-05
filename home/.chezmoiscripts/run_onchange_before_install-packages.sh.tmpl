@@ -1,0 +1,31 @@
+#!/bin/sh
+
+{{ $sudo := "sudo " -}}
+{{ if eq .chezmoi.username "root" -}}
+{{   $sudo = "" -}}
+{{ end -}}
+
+
+{{ if eq .chezmoi.os "darwin" -}}
+
+brew install {{range .packages -}}
+{{if kindIs "string" .}} "{{.}}" {{end -}}
+{{if and (kindIs "map" .) (hasKey . "brew")}} "{{get . "brew"}}" {{end -}}
+{{- end}}
+
+
+
+{{ else if eq .chezmoi.osRelease.id "arch" -}}
+
+
+{{$sudo}}pacman -S --needed {{range .packages -}}
+{{if kindIs "string" .}} "{{.}}" {{end -}}
+{{if and (kindIs "map" .) (hasKey . "pacman")}} "{{get . "pacman"}}" {{end -}}
+{{- end}}
+
+
+{{ else -}}
+
+echo "Unknown OS"
+
+{{ end -}}

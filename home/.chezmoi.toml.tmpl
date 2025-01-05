@@ -1,0 +1,22 @@
+{{- $types := list "personal" "work" }}
+{{- $type := promptChoiceOnce . "type" "What type of machine?" $types -}}
+
+[data]
+  type = {{- $type | quote }}
+  name = "Aaron Edwards"
+  email = {{ if eq $type "work" }} "aarone@squareup.com" {{ else }} "edwards.aaronmark@gmail.com" {{ end }}
+
+  packages = [
+    { aur = "asdf-vm", brew = "asdf" },
+    "eza",
+    "fd",
+    "fzf",
+    "neovim",
+    "ripgrep",
+    "wezterm",
+    "zoxide",
+    "zsh",
+    { aur = "zsh-antidote", brew = "antidote" },
+    { aur = "otf-monaspace-nerd", brew = "font-monaspace-nerd-font" }
+  ]
+
