@@ -1,0 +1,4 @@
+romkatv/powerlevel10k kind:fpath
+
+zsh-users/zsh-completions
+zsh-users/zsh-autosuggestions

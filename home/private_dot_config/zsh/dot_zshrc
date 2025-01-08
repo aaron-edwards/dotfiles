@@ -1,0 +1,5 @@
+
+for FILE in $ZDOTDIR/cfg/*; do
+  source $FILE
+done
+
