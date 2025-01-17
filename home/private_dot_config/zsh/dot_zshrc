@@ -1,3 +1,4 @@
+#!/bin/zsh
 
 for FILE in $ZDOTDIR/cfg/*; do
   source $FILE

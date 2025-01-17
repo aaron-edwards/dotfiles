@@ -45,13 +45,32 @@
   # automatically hidden when the input line reaches it. Right prompt above the
   # last prompt line gets hidden if it would overlap with left prompt.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+    status
+    command_execution_time
+    background_jobs
+    asdf
+  )
+
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS+=(
+      hermit
+      cash_server
+    )
+  fi
+
+  POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS+=(
+    chezmoi_shell
+    context
+    newline
+  )
+
     # =========================[ Line #1 ]=========================
-    status                  # exit code of the last command
-    command_execution_time  # duration of the last command
-    background_jobs         # presence of background jobs
-    direnv                  # direnv status (https://direnv.net/)
-    asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
-    hermit                  # hermit (https://cashapp.github.io)
+    #status                  # exit code of the last command
+    #command_execution_time  # duration of the last command
+    #background_jobs         # presence of background jobs
+    #direnv                  # direnv status (https://direnv.net/)
+    #asdf                    # asdf version manager (https://github.com/asdf-vm/asdf)
+    #hermit                  # hermit (https://cashapp.github.io)
     #  virtualenv           # python virtual environment (https://docs.python.org/3/library/venv.html)
     #  anaconda             # conda environment (https://conda.io/)
     #  pyenv                # python environment (https://github.com/pyenv/pyenv)
@@ -86,7 +105,7 @@
     # gcloud                # google cloud cli account and project (https://cloud.google.com/)
     # google_app_cred       # google application credentials (https://cloud.google.com/docs/authentication/production)
     # toolbox               # toolbox name (https://github.com/containers/toolbox)
-    context               # user@hostname
+    # context               # user@hostname
     # nordvpn               # nordvpn connection status, linux only (https://nordvpn.com/)
     # ranger                # ranger shell (https://github.com/ranger/ranger)
     # yazi                  # yazi shell (https://github.com/sxyazi/yazi)
@@ -96,28 +115,27 @@
     # vim_shell             # vim shell indicator (:sh)
     # midnight_commander    # midnight commander shell (https://midnight-commander.org/)
     # nix_shell             # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
-    chezmoi_shell           # chezmoi shell (https://www.chezmoi.io/)
+    # chezmoi_shell           # chezmoi shell (https://www.chezmoi.io/)
     # vi_mode               # vi mode (you don't need this if you've enabled prompt_char)
     # vpn_ip                # virtual private network indicator
     # load                  # CPU load
     # disk_usage            # disk usage
     # ram                   # free RAM
     # swap                  # used swap
-    todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
+    # todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     # timewarrior           # timewarrior tracking status (https://timewarrior.net/)
     # taskwarrior           # taskwarrior task count (https://taskwarrior.org/)
     # per_directory_history # Oh My Zsh per-directory-history local/global indicator
     # cpu_arch              # CPU architecture
-    time                    # current time
+    # time                  # current time
     # =========================[ Line #2 ]=========================
-    newline
+    # newline
     # ip                    # ip address and bandwidth usage for a specified network interface
     # public_ip             # public IP address
     # proxy                 # system-wide http/https/ftp proxy
     # battery               # internal battery
     # wifi                  # wifi speed
     # example               # example user-defined segment (see prompt_example function below)
-  )
 
   # Defines character set used by powerlevel10k. It's best to let `p10k configure` set it for you.
   typeset -g POWERLEVEL9K_MODE=nerdfont-v3
@@ -1782,6 +1800,27 @@
     fi
   }
 
+  #################################[ cash_server ]##################################
+  typeset -g POWERLEVEL9K_CASH_SERVER_FOREGROUND=0
+  typeset -g POWERLEVEL9K_CASH_SERVER_BACKGROUND=6
+  function prompt_cash_server() {
+    if [[ $HERMIT_ENV == *"cash-server"* ]]; then
+      readonly CASH_SERVER_MODULES_FILE=$(echo $HERMIT_ENV | sed 's/cash-server.*/cash-server\/requested-modules.txt/') 
+      readonly CASH_SERVER_MODULES=$(cat $CASH_SERVER_MODULES_FILE | grep ":\|__ALL" | sed 's/://g')
+      if [[ $CASH_SERVER_MODULES == "__ALL" ]]; then
+        p10k segment -t "💰 ALL"
+      else
+        readonly CASH_SERVER_MODULES_COUNT=$(echo "$CASH_SERVER_MODULES" | wc -l | tr -d '[:space:]')
+        if [ "${value}" -lt 4 ]; then
+          readonly CASH_SERVER_MODULES_LIST=$(echo "$CASH_SERVER_MODULES" |  paste -sd, - ) 
+          p10k segment -t "💰 ${CASH_SERVER_MODULES_LIST}"
+        else
+          p10k segment -t "💰 ${CASH_SERVER_MODULES_COUNT}"
+        fi
+      fi
+    fi
+  }
+
   # Example of a user-defined prompt segment. Function prompt_example will be called on every
   # prompt if `example` prompt segment is added to POWERLEVEL9K_LEFT_PROMPT_ELEMENTS or
   # POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS. It displays an icon and yellow text on red background
@@ -1823,7 +1862,7 @@
   #   - always:   Trim down prompt when accepting a command line.
   #   - same-dir: Trim down prompt when accepting a command line unless this is the first command
   #               typed after changing current working directory.
-  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=always
+  typeset -g POWERLEVEL9K_TRANSIENT_PROMPT=same-dir
 
   # Instant prompt mode.
   #
@@ -1836,12 +1875,16 @@
   #              zsh initialization. Choose this if you've never tried instant prompt, haven't
   #              seen the warning, or if you are unsure what this all means.
   typeset -g POWERLEVEL9K_INSTANT_PROMPT=verbose
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Can't work out how to make hermit stop printing junk to the console during init
+    typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+  fi
 
   # Hot reload allows you to change POWERLEVEL9K options after Powerlevel10k has been initialized.
   # For example, you can type POWERLEVEL9K_BACKGROUND=red and see your prompt turn red. Hot reload
   # can slow down prompt by 1-2 milliseconds, so it's better to keep it turned off unless you
   # really need it.
-  typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
+  typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=false
 
   # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
