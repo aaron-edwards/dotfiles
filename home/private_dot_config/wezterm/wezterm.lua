@@ -6,6 +6,8 @@ local globals = {
 	default_scheme = "light",
 	dark_scheme = "dark",
 	light_scheme = "light",
+
+  is_darwn = wezterm.target_triple:find("darwin") ~= nil,
 }
 
 local function fold(table, op, init)

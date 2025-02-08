@@ -168,6 +168,7 @@ function M.apply_to_bar(config, scheme)
 	local window_frame = config.window_frame or {}
 
 	window_frame.active_titlebar_bg = tab_bar.background
+	window_frame.inactive_titlebar_bg = tab_bar.background
 
 	return { tab_bar = tab_bar }, window_frame
 end
