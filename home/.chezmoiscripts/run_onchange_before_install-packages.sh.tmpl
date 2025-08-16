@@ -15,12 +15,17 @@ brew install {{range .packages -}}
 
 
 
-{{ else if eq .chezmoi.osRelease.id "arch" -}}
+{{ else if eq .chezmoi.os "linux" -}}
 
 
 {{$sudo}}pacman -S --needed {{range .packages -}}
 {{if kindIs "string" .}} "{{.}}" {{end -}}
 {{if and (kindIs "map" .) (hasKey . "pacman")}} "{{get . "pacman"}}" {{end -}}
+{{- end}}
+
+
+yay -S --needed {{range .packages -}}
+{{if and (kindIs "map" .) (hasKey . "aur")}} "{{get . "aur"}}" {{end -}}
 {{- end}}
 
 
