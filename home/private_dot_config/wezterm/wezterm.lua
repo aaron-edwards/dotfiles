@@ -21,6 +21,7 @@ end
 local config = fold({
 	"config/appearance",
 	"config/keys",
+  "config/tab-title",
 }, function(acc, lib)
 	return require(lib).apply(acc, wezterm, globals)
 end, wezterm.config_builder())
