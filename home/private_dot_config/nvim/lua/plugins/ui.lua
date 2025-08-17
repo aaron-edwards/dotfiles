@@ -47,10 +47,9 @@ return {
       end
     end,
     opts = {
-       extensions = { "neo-tree", "lazy" },
+      extensions = { "neo-tree", "lazy" },
       disabled_filetypes = {
         statusline = {
-
           'neo-tree',
         },
         winbar = {},
