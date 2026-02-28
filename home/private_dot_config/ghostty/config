@@ -1,0 +1,21 @@
+shell-integration = zsh
+
+theme = light:Selenized Light,dark:Selenized Dark
+unfocused-split-opacity=.5
+split-divider-color=#009c8f
+window-decoration=server
+
+gtk-titlebar-style=native
+gtk-wide-tabs=false
+
+macos-titlebar-style=native
+
+keybind = ctrl+arrow_up=goto_split:up
+keybind = ctrl+arrow_down=goto_split:down
+keybind = ctrl+arrow_left=goto_split:left
+keybind = ctrl+arrow_right=goto_split:right
+
+keybind = ctrl+shift+arrow_up=new_split:up
+keybind = ctrl+shift+arrow_down=new_split:down
+keybind = ctrl+shift+arrow_left=new_split:left
+keybind = ctrl+shift+arrow_right=new_split:right
