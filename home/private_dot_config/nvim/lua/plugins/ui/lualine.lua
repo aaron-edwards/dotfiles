@@ -1,3 +1,6 @@
+--[[
+  Status line showing mode, file, git branch, and diagnostics.
+]]
 return {
   {
     'nvim-lualine/lualine.nvim',

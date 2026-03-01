@@ -1,3 +1,6 @@
+--[[
+  Colorscheme. Using the spring variant with a light background.
+]]
 return {
   {
     'maxmx03/solarized.nvim',

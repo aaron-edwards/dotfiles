@@ -1,10 +1,18 @@
+--[[
+  Integrates Claude Code CLI into Neovim. Supports terminal session, sending
+  buffers/selections to Claude, and diff review (accept/deny) in a new tab.
+  Pinned to a branch that fixes leftover diff windows not closing on accept/reject.
+]]
 return {
   "coder/claudecode.nvim",
   branch = "nvim-integration-xg1c",
   dependencies = { "folke/snacks.nvim" },
-  config = true,
+  opts = {
+    diff_opts = {
+      open_in_new_tab = true,
+    },
+  },
   keys = {
-    { "<leader>a", nil, desc = "AI/Claude Code" },
     { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
     { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
     { "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },

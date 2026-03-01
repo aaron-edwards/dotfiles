@@ -1,3 +1,8 @@
+--[[
+  Collection of utilities. Using: picker (fuzzy finder for files, buffers, grep,
+  git), explorer (file tree sidebar), and bigfile (disables heavy features on
+  large files).
+]]
 return {
   "folke/snacks.nvim",
   priority = 1000,
@@ -6,6 +11,29 @@ return {
     bigfile = {},
     picker = {},
     explorer = {},
+    dashboard = {
+      preset = {
+        header = [[
+███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
+               __ 
+              / _)
+     _.----._/ /  
+    /         /   
+ __/ (  | (  |    
+/__.-'|_|--|_|    ]],
+      },
+      sections = {
+        { section = "header" },
+        { section = "keys", gap = 0, padding = 1 },
+        { section = "recent_files", indent = 2, padding = 1 },
+        { section = "startup" },
+      },
+    },
   },
   keys = {
     -- Top Pickers & Explorer
@@ -16,9 +44,7 @@ return {
     { "<leader>n", function() Snacks.picker.notifications() end, desc = "Notification History" },
     { "<leader>e", function() Snacks.explorer() end, desc = "File Explorer" },
     -- find
-    { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
     { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
-    { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
     { "<leader>fg", function() Snacks.picker.git_files() end, desc = "Find Git Files" },
     { "<leader>fp", function() Snacks.picker.projects() end, desc = "Projects" },
     { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent" },

@@ -1,3 +1,7 @@
+--[[
+  Git diff indicators in the sign column with hunk-level stage, reset,
+  preview, and blame. Also provides the `ih` text object for selecting a hunk.
+]]
 return {
   "lewis6991/gitsigns.nvim",
   event = { "BufReadPre", "BufNewFile" },
