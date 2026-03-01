@@ -1,0 +1,6 @@
+
+# Ignore .claude directories (Claude Code config) anywhere in the home directory
+**/.claude/**
+
+# Ignore lazy-lock.json (neovim lazy.nvim lockfile) anywhere
+**/lazy-lock.json
