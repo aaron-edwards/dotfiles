@@ -1,0 +1,31 @@
+# Claude Code transient session data — never commit
+projects/**
+todos/**
+tasks/**
+file-history/**
+shell-snapshots/**
+session-env/**
+debug/**
+ide/**
+statsig/**
+cache/**
+backups/**
+downloads/**
+history.jsonl
+plans/**
+
+# Internal machine-specific Claude Code state
+.claude/**
+
+# Plugins managed by Claude Code itself
+plugins/**
+
+# Private credentials
+.credentials.json
+
+# Old root-level scripts (now in statusline/)
+statusline.sh
+usage.sh
+
+# Memory files are personal/session context — opt-in per machine
+memory/**
