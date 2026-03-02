@@ -9,6 +9,7 @@ return {
   lazy = false,
   opts = {
     bigfile = {},
+    notifier = {},
     picker = {},
     explorer = {},
     dashboard = {
