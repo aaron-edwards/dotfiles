@@ -11,11 +11,12 @@ return {
 		wk.setup(opts)
 		wk.add({
 			{ "<leader>f", group = "find" },
-			{ "<leader>g", group = "git" },
+			{ "<leader>g",  group = "git" },
+			{ "<leader>gt", group = "git toggle" },
 			{ "<leader>h", group = "hunks" },
 			{ "<leader>a", group = "AI" },
 			{ "<leader>c", group = "code" },
-			{ "<leader>t", group = "toggles" },
+			{ "<leader>t", group = "test" },
 		})
 	end,
 }

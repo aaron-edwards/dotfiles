@@ -49,9 +49,9 @@ return {
 			end, "Blame line")
 			map("n", "<leader>hd", gs.diffthis, "Diff this")
 
-			-- Toggles
-			map("n", "<leader>tb", gs.toggle_current_line_blame, "Toggle line blame")
-			map("n", "<leader>td", gs.toggle_deleted, "Toggle deleted")
+			-- Toggles (under git group)
+			map("n", "<leader>gtb", gs.toggle_current_line_blame, "Toggle line blame")
+			map("n", "<leader>gtd", gs.toggle_deleted, "Toggle deleted")
 
 			-- Text object
 			map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "Select hunk")

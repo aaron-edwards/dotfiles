@@ -10,6 +10,8 @@ return {
 	opts = {
 		bigfile = {},
 		notifier = {},
+		lazygit = {},
+		scroll = {},
 		picker = {},
 		explorer = {},
 		dashboard = {
@@ -158,6 +160,14 @@ return {
 				Snacks.picker.git_log_file()
 			end,
 			desc = "Git Log File",
+		},
+		-- lazygit
+		{
+			"<leader>gg",
+			function()
+				Snacks.lazygit()
+			end,
+			desc = "Lazygit",
 		},
 	},
 }
