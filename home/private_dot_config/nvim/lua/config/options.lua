@@ -17,7 +17,6 @@ g.maplocalleader = "\\"
 -- Neovim UI
 -----------------------------------------------------------
 opt.number = true           -- Show line number
-opt.relativenumber = true   -- Relative line numbers
 opt.showmatch = true        -- Highlight matching parenthesis
 opt.termguicolors = true    -- Enable 24-bit RGB colors
 opt.signcolumn = "yes"      -- Always show sign column (no layout shift)
@@ -45,4 +44,10 @@ opt.smartindent = true      -- Autoindent new lines
 opt.history = 1000          -- Remember N lines in history
 opt.synmaxcol = 240         -- Max column for syntax highlight
 opt.updatetime = 250        -- ms to wait for trigger an event
+
+-----------------------------------------------------------
+-- Disable unused built-in plugins (startup performance)
+-----------------------------------------------------------
+g.loaded_matchit      = 1   -- replaced by treesitter % matching
+g.loaded_netrwPlugin  = 1   -- replaced by snacks explorer
 
