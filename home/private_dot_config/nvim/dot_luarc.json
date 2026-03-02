@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/lua-language-server/master/meta/template/schema.json",
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "diagnostics": {
+    "globals": ["vim", "Snacks"]
+  },
+  "workspace": {
+    "checkThirdParty": false
+  }
+}

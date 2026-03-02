@@ -1,6 +1,6 @@
 --[[
   Syntax highlighting using tree-sitter grammars.
-  Parsers: lua, vim, vimdoc, bash, python, typescript, tsx, javascript, go.
+  Parsers: lua, vim, vimdoc, bash, python, typescript, tsx, javascript.
 ]]
 return {
   "nvim-treesitter/nvim-treesitter",
@@ -11,7 +11,6 @@ return {
       "lua", "vim", "vimdoc", "bash",
       "python",
       "typescript", "tsx", "javascript",
-      "go",
     })
 
     vim.api.nvim_create_autocmd("FileType", {

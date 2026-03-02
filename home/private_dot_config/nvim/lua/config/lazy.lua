@@ -23,6 +23,7 @@ require("lazy").setup({
     { import = "plugins.ui" },
     { import = "plugins.coding" },
     { import = "plugins.git" },
+    { import = "plugins.lsp" },
   },
   -- automatically check for plugin updates
   checker = { enabled = true },
