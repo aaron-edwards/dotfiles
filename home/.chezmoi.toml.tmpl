@@ -1,10 +1,7 @@
-{{- $types := list "personal" "work" }}
-{{- $type := promptChoiceOnce . "type" "What type of machine?" $types -}}
-
 [data]
-  type = {{- $type | quote }}
   name = "Aaron Edwards"
-  email = {{ if eq $type "work" }} "aarone@squareup.com" {{ else }} "edwards.aaronmark@gmail.com" {{ end }}
+  email = "edwards.aaronmark@gmail.com"
+  git_username = "aaron-edwards"
 
   packages = [
     { aur = "asdf-vm", brew = "asdf" },
@@ -12,10 +9,11 @@
     "fd",
     "fzf",
     "neovim",
+    "gh",
+    { aur = "ghostty", cask = "ghostty" },
     "ripgrep",
     "jq",
-    "wl-clipboard", 
-    "ghostty", # not sure if we need "brew install --cask ghostty" for osx
+    { aur = "wl-clipboard" }, 
     "zoxide",
     "zsh",
     { aur = "zsh-antidote", brew = "antidote" },

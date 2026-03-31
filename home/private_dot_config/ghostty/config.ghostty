@@ -8,7 +8,7 @@ window-decoration=server
 gtk-titlebar-style=native
 gtk-wide-tabs=false
 
-macos-titlebar-style=native
+macos-titlebar-style=transparent
 
 keybind = ctrl+arrow_up=goto_split:up
 keybind = ctrl+arrow_down=goto_split:down

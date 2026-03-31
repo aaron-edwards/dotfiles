@@ -5,7 +5,6 @@
 {{   $sudo = "" -}}
 {{ end -}}
 
-
 {{ if eq .chezmoi.os "darwin" -}}
 
 brew install {{range .packages -}}
@@ -13,7 +12,9 @@ brew install {{range .packages -}}
 {{if and (kindIs "map" .) (hasKey . "brew")}} "{{get . "brew"}}" {{end -}}
 {{- end}}
 
-
+brew install --cask {{range .packages -}}
+{{if and (kindIs "map" .) (hasKey . "cask")}} "{{get . "cask"}}" {{end -}}
+{{- end}}
 
 {{ else if eq .chezmoi.os "linux" -}}
 
@@ -27,7 +28,6 @@ brew install {{range .packages -}}
 yay -S --needed {{range .packages -}}
 {{if and (kindIs "map" .) (hasKey . "aur")}} "{{get . "aur"}}" {{end -}}
 {{- end}}
-
 
 {{ else -}}
 

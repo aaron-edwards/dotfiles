@@ -6,40 +6,57 @@
 SEP=$'\xEE\x82\xB0'
 RESET="\033[0m"
 
-# Nerd Font icons
-ICON_MODEL=$'\uEE0D'   # nf-fa-robot
-ICON_DIR=$'\uEA83'     # nf-cod-folder
-ICON_GIT=$'\uE725'     # nf-dev-git_branch
-ICON_USAGE=$'\uF254'   # nf-fa-hourglass
-ICON_CTX=$'\uEEB2'     # nf-fa-gauge
+# Nerd Font icons (raw UTF-8 bytes for bash 3.2 compat — \uXXXX only works in bash 4.2+)
+ICON_MODEL=$'\xEE\xB8\x8D'   # U+EE0D nf-fa-robot
+ICON_DIR=$'\xEE\xAA\x83'     # U+EA83 nf-cod-folder
+ICON_GIT=$'\xEE\x9C\xA5'     # U+E725 nf-dev-git_branch
+ICON_USAGE=$'\xEF\x89\x94'   # U+F254 nf-fa-hourglass
+ICON_CTX=$'\xEE\xBA\xB2'     # U+EEB2 nf-fa-gauge
 
 # Read JSON from stdin and cd to the reported cwd so git commands work
 JSON=$(cat)
 _CWD=$(echo "$JSON" | jq -r '.cwd // empty' 2>/dev/null)
 [[ -n "$_CWD" ]] && cd "$_CWD" 2>/dev/null
 
-# Solarized RGB values (R;G;B for truecolor)
-BASE02="7;54;66"
-BASE0="131;148;150"
-CYAN="42;161;152"
-BLUE="38;139;210"
-GREEN="133;153;0"
-YELLOW="181;137;0"
-RED="220;50;47"
+# ANSI color indices (0–7 normal, 8–15 bright)
+# The terminal maps these to the active palette (Ghostty: Selenized Light/Dark).
+# Note: Selenized Light inverts the usual slot sense — slot 0 ("black") → bg_2
+# (light warm gray) and slot 7 ("white") → fg_0 (dark slate).
+BG_1=7    # white slot → selenized fg_0 (dark slate background)
+RED=1
+GREEN=2
+YELLOW=3
+BLUE=4
+VIOLET=5  # magenta slot → selenized magenta/violet
+CYAN=6
+# Git segment colors: GREEN = clean, YELLOW = dirty
+# Context segment colors: CYAN = normal, RED = ≥ 70%
 
-# Truecolor bg helper — empty string resets to terminal default
+# ANSI background escape from color index; empty resets to terminal default
 color_bg() {
-    [[ -n "$1" ]] && echo -ne "\033[48;2;${1}m" || echo -ne "\033[49m"
+    if [[ -z "$1" ]]; then echo -ne "\033[49m"
+    elif (( $1 < 8 )); then echo -ne "\033[$((40 + $1))m"
+    else echo -ne "\033[$((100 + $1 - 8))m"
+    fi
 }
 
-# Powerline segment: text, bg_color, next_bg_color
-# fg is always terminal color 0 (black)
+# ANSI foreground escape from color index; empty resets to terminal default
+color_fg() {
+    if [[ -z "$1" ]]; then echo -ne "\033[39m"
+    elif (( $1 < 8 )); then echo -ne "\033[$((30 + $1))m"
+    else echo -ne "\033[$((90 + $1 - 8))m"
+    fi
+}
+
+# Powerline segment: text, bg_index, next_bg_index, [fg_index]
+# fg defaults to 0 (black slot → light color in Selenized Light, good on accent bgs)
+# Pass 7 (white slot → dark color in Selenized Light) for text on light backgrounds
 segment() {
-    local text="$1" bg="$2" next_bg="${3:-}"
-    echo -ne "\033[30m"
+    local text="$1" bg="$2" next_bg="${3:-}" fg="${4:-0}"
+    color_fg "$fg"
     color_bg "$bg"
     echo -ne " $text "
-    echo -ne "\033[38;2;${bg}m"
+    color_fg "$bg"
     color_bg "$next_bg"
     echo -ne "$SEP"
 }
@@ -84,11 +101,10 @@ get_git_info() {
     echo "$info"
 }
 
-# Context % → Solarized color
+# Context % → ANSI color index (cyan normally, red ≥ 70%)
 usage_color() {
-    if   [[ $1 -ge 90 ]]; then echo "$RED"
-    elif [[ $1 -ge 70 ]]; then echo "$YELLOW"
-    else                        echo "$GREEN"
+    if [[ $1 -ge 70 ]]; then echo "$RED"
+    else                      echo "$CYAN"
     fi
 }
 
@@ -104,13 +120,12 @@ get_pwd() {
     fi
 }
 
-# Format a resets_at ISO timestamp as countdown (e.g. 3h30m, 5d, 45m)
+# Format a resets_at Unix timestamp as countdown (e.g. 3h30m, 5d, 45m)
 time_until() {
     local resets_at="$1"
     [[ -z "$resets_at" ]] || [[ "$resets_at" == "null" ]] && return
-    local now=$(date +%s)
-    local target=$(date -d "$resets_at" +%s 2>/dev/null) || return
-    local diff=$(( target - now ))
+    local now; now=$(date +%s)
+    local diff=$(( resets_at - now ))
     [[ $diff -le 0 ]] && echo "now" && return
     local d=$(( diff / 86400 ))
     local h=$(( (diff % 86400) / 3600 ))
@@ -121,20 +136,17 @@ time_until() {
     fi
 }
 
-# Build usage text: "3h30m:78% 5d:40%"
+# Build usage text from rate_limits in the session JSON: "3h30m:27% 5d:38%"
 format_usage() {
-    local usage
-    usage=$("$(dirname "$0")/usage.sh" 2>/dev/null) || return
-
     local fh_pct fh_reset week_pct week_reset
-    fh_pct=$(echo "$usage"     | jq -r '.five_hour.utilization // empty')
-    fh_reset=$(echo "$usage"   | jq -r '.five_hour.resets_at   // empty')
-    week_pct=$(echo "$usage"   | jq -r '.seven_day.utilization // empty')
-    week_reset=$(echo "$usage" | jq -r '.seven_day.resets_at   // empty')
+    fh_pct=$(echo "$JSON"    | jq -r '.rate_limits.five_hour.used_percentage  // empty')
+    fh_reset=$(echo "$JSON"  | jq -r '.rate_limits.five_hour.resets_at        // empty')
+    week_pct=$(echo "$JSON"  | jq -r '.rate_limits.seven_day.used_percentage  // empty')
+    week_reset=$(echo "$JSON"| jq -r '.rate_limits.seven_day.resets_at        // empty')
 
     local out=""
-    [[ -n "$fh_pct" ]]   && out+="$(time_until "$fh_reset"):${fh_pct%.0}%"
-    [[ -n "$week_pct" ]] && out+=" $(time_until "$week_reset"):${week_pct%.0}%"
+    [[ -n "$fh_pct" ]]   && out+="$(time_until "$fh_reset"):$(printf '%.0f' "$fh_pct")%"
+    [[ -n "$week_pct" ]] && out+=" $(time_until "$week_reset"):$(printf '%.0f' "$week_pct")%"
     echo "$out"
 }
 
@@ -160,7 +172,7 @@ get_task_queue() {
     done
 }
 
-# LINE 1: Model (base02) → Dir (blue) → Git (cyan, if in repo)
+# LINE 1: Model (bg_1) → Dir (blue) → Git (green=clean, yellow=dirty)
 line1() {
     local model_display=$(echo "$JSON" | grep -o '"display_name":"[^"]*"' | sed 's/.*"display_name":"//;s/"//')
     [[ -z "$model_display" ]] && model_display="Sonnet"
@@ -168,13 +180,16 @@ line1() {
     local git_info=$(get_git_info)
     local pwd=$(get_pwd)
 
+    local git_color="$GREEN"
+    [[ "$git_info" == *"*"* || "$git_info" == *"+"* ]] && git_color="$YELLOW"
+
     echo -ne "${RESET}"
     if [[ -n "$git_info" ]]; then
-        segment "${ICON_MODEL} ${model_display}" "$BASE02" "$BLUE"
-        segment "${ICON_DIR} ${pwd}"             "$BLUE"   "$CYAN"
-        segment "${ICON_GIT} ${git_info}"        "$CYAN"
+        segment "${ICON_MODEL} ${model_display}" "$BG_1"       "$BLUE"       0
+        segment "${ICON_DIR} ${pwd}"             "$BLUE"       "$git_color"
+        segment "${ICON_GIT} ${git_info}"        "$git_color"
     else
-        segment "${ICON_MODEL} ${model_display}" "$BASE02" "$BLUE"
+        segment "${ICON_MODEL} ${model_display}" "$BG_1" "$BLUE" 0
         segment "${ICON_DIR} ${pwd}"             "$BLUE"
     fi
     echo -e "${RESET}"
@@ -182,15 +197,16 @@ line1() {
 
 # LINE 2: Usage (base02) → Context % (green/yellow/red)
 line2() {
-    local used_pct=$(echo "$JSON" | grep -o '"used_percentage":[^,}]*' | sed 's/.*://;s/[[:space:]]//g')
-    [[ -z "$used_pct" ]] || [[ "$used_pct" == "null" ]] && used_pct=0
+    local used_pct
+    used_pct=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0' 2>/dev/null)
+    [[ -z "$used_pct" || "$used_pct" == "null" ]] && used_pct=0
 
     local ctx_color; ctx_color=$(usage_color "$used_pct")
     local usage_text; usage_text=$(format_usage)
 
     echo -ne "${RESET}"
     if [[ -n "$usage_text" ]]; then
-        segment "${ICON_USAGE} ${usage_text}" "$BASE0" "$ctx_color"
+        segment "${ICON_USAGE} ${usage_text}" "$VIOLET" "$ctx_color"
         segment "${ICON_CTX} ${used_pct}%"   "$ctx_color"
     else
         segment "${ICON_CTX} ${used_pct}%"   "$ctx_color"
