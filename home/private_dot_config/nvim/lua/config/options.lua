@@ -6,7 +6,8 @@ local opt = vim.opt   -- Set options (global/buffer/windows-scoped)
 -----------------------------------------------------------
 opt.mouse = 'a'                       -- Enable mouse support
 opt.clipboard = 'unnamedplus'         -- Copy/paste to system clipboard
-if vim.fn.has("unix") == 1 then
+if vim.fn.has("osx") == 1 then
+elseif vim.fn.has("unix") then
   g.clipboard = 'wl-copy'
 end
 opt.swapfile = false                  -- Don't use swapfile
