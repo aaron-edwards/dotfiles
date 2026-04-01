@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+printf "\033[0;32mInstalling packages\033[0m\n"
 
 {{ $sudo := "sudo " -}}
 {{ if eq .chezmoi.username "root" -}}

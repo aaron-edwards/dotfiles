@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+printf "\033[0;32mSetting up asdf\033[0m\n"
 
 if ! command -v asdf > /dev/null 2>&1; then
     echo "asdf not found, skipping Node.js setup"

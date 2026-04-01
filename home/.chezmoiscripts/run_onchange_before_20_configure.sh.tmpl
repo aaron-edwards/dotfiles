@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+printf "\033[0;32mSetting up git config\033[0m\n"
 
 git config --global user.name "{{.git_username}}"
 git config --global user.email "{{.email}}"
@@ -12,11 +14,11 @@ git config --global core.editor nvim
 git config --global core.excludesfile ~/.gitignore_global
 
 {{ if eq .chezmoi.os "darwin" -}}
+printf "\033[0;32mSetting up osx config\033[0m\n"
 
 defaults write NSGlobalDomain KeyRepeat -int 2           # faster key repeat
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 defaults write com.apple.dock autohide -bool true        # auto-hide dock
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false  # disable natural scrolling
-killall Dock
 
 {{ end -}}

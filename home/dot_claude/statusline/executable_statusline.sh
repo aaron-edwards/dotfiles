@@ -248,7 +248,18 @@ line2() {
     local usage_text; usage_text=$(format_usage)
     [[ -z "$usage_text" ]] && return
 
-    echo -ne "\033[38;5;248m"
+    local fh_pct week_pct max_pct
+    fh_pct=$(printf '%.0f' "$(echo "$JSON" | jq -r '.rate_limits.five_hour.used_percentage // 0')")
+    week_pct=$(printf '%.0f' "$(echo "$JSON" | jq -r '.rate_limits.seven_day.used_percentage // 0')")
+    max_pct=$(( fh_pct > week_pct ? fh_pct : week_pct ))
+
+    if [[ $max_pct -ge 90 ]]; then
+        color_fg "$RED"
+    elif [[ $max_pct -ge 80 ]]; then
+        color_fg "$YELLOW"
+    else
+        echo -ne "\033[38;5;248m"
+    fi
     echo -ne " ${ICON_USAGE} ${usage_text}"
     echo -e "${RESET}"
 }

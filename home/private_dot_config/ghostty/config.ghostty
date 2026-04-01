@@ -1,7 +1,8 @@
 shell-integration = zsh
 
 theme = light:Selenized Light,dark:Selenized Dark
-unfocused-split-opacity=.5
+unfocused-split-opacity=.85
+unfocused-split-fill=#002b36
 split-divider-color=#009c8f
 window-decoration=server
 
