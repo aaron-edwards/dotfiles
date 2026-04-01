@@ -18,33 +18,38 @@ JSON=$(cat)
 _CWD=$(echo "$JSON" | jq -r '.cwd // empty' 2>/dev/null)
 [[ -n "$_CWD" ]] && cd "$_CWD" 2>/dev/null
 
-# ANSI color indices (0–7 normal, 8–15 bright)
-# The terminal maps these to the active palette (Ghostty: Selenized Light/Dark).
-# Note: Selenized Light inverts the usual slot sense — slot 0 ("black") → bg_2
-# (light warm gray) and slot 7 ("white") → fg_0 (dark slate).
-BG_1=7    # white slot → selenized fg_0 (dark slate background)
+# ANSI color indices (0–7 normal, 8–15 bright, 16–255 256-color)
+# The terminal maps 0-15 to the active palette (Ghostty: Selenized Light/Dark).
 RED=1
 GREEN=2
 YELLOW=3
 BLUE=4
-VIOLET=5  # magenta slot → selenized magenta/violet
 CYAN=6
+# Model segment: matches p10k OS icon (dark bg_1 / light fg)
+BG_MODEL="0;43;54"   # Solarized base03 true color (#002b36)
+FG_MODEL=253   # 256-color light bg_0
 # Git segment colors: GREEN = clean, YELLOW = dirty
 # Context segment colors: CYAN = normal, RED = ≥ 70%
 
 # ANSI background escape from color index; empty resets to terminal default
+# Supports 0-7 (standard), 8-15 (bright), and 16-255 (256-color)
 color_bg() {
     if [[ -z "$1" ]]; then echo -ne "\033[49m"
+    elif [[ "$1" == *";"* ]]; then echo -ne "\033[48;2;${1}m"
     elif (( $1 < 8 )); then echo -ne "\033[$((40 + $1))m"
-    else echo -ne "\033[$((100 + $1 - 8))m"
+    elif (( $1 < 16 )); then echo -ne "\033[$((100 + $1 - 8))m"
+    else echo -ne "\033[48;5;${1}m"
     fi
 }
 
 # ANSI foreground escape from color index; empty resets to terminal default
+# Supports 0-7 (standard), 8-15 (bright), and 16-255 (256-color)
 color_fg() {
     if [[ -z "$1" ]]; then echo -ne "\033[39m"
+    elif [[ "$1" == *";"* ]]; then echo -ne "\033[38;2;${1}m"
     elif (( $1 < 8 )); then echo -ne "\033[$((30 + $1))m"
-    else echo -ne "\033[$((90 + $1 - 8))m"
+    elif (( $1 < 16 )); then echo -ne "\033[$((90 + $1 - 8))m"
+    else echo -ne "\033[38;5;${1}m"
     fi
 }
 
@@ -61,9 +66,8 @@ segment() {
     echo -ne "$SEP"
 }
 
-# Extract a top-level JSON string field
 json_get() {
-    echo "$JSON" | grep -o "\"$1\":[^,}]*" | sed 's/.*://;s/\"//g;s/[[:space:]]//g'
+    echo "$JSON" | jq -r ".$1 // empty"
 }
 
 # Get git info — returns empty if not in a repo
@@ -109,15 +113,51 @@ usage_color() {
 }
 
 # Shorten working directory
+# Last component: up to 20 chars. Parents: 1 char if alphanumeric-first, 2 if not (e.g. ".").
+# Max 5 abbreviated parent dirs (closest to current shown when truncating).
 get_pwd() {
-    local cwd=$(json_get "cwd" | tr -d '"')
+    local cwd
+    cwd=$(json_get "cwd")
     [[ -z "$cwd" ]] && cwd="${PWD}"
-    cwd="${cwd/#$HOME/\~}"
-    if [[ $(echo "$cwd" | grep -o "/" | wc -l) -gt 2 ]]; then
-        echo "...$(echo "$cwd" | rev | cut -d'/' -f1-2 | rev)"
-    else
-        echo "$cwd"
-    fi
+    cwd="${cwd/#$HOME/~}"
+
+    IFS='/' read -ra parts <<< "$cwd"
+    local n=${#parts[@]}
+
+    # Trivial: single component (e.g. "~" or "/")
+    [[ $n -le 1 ]] && echo "${parts[0]}" && return
+
+    # Last component, max 20 chars
+    local last="${parts[$((n-1))]}"
+    [[ ${#last} -gt 20 ]] && last="${last:0:20}"
+
+    # Anchor: "" (absolute path) or "~"
+    local anchor="${parts[0]}"
+
+    # Abbreviate each parent dir (indices 1 .. n-2)
+    local abbrevs=()
+    for (( i=1; i<n-1; i++ )); do
+        local p="${parts[$i]}"
+        if [[ "${p:0:1}" =~ [[:alnum:]] ]]; then
+            abbrevs+=("${p:0:1}")
+        else
+            abbrevs+=("${p:0:2}")
+        fi
+    done
+
+    # Keep at most 5 (rightmost)
+    local m=${#abbrevs[@]}
+    [[ $m -gt 5 ]] && abbrevs=("${abbrevs[@]:$((m-5))}")
+
+    # Build result
+    local result
+    [[ -z "$anchor" ]] && result="" || result="$anchor"
+    for part in "${abbrevs[@]}"; do
+        [[ -z "$result" ]] && result+="$part" || result+="/$part"
+    done
+    [[ -z "$result" ]] && result+="$last" || result+="/$last"
+
+    echo "$result"
 }
 
 # Format a resets_at Unix timestamp as countdown (e.g. 3h30m, 5d, 45m)
@@ -172,45 +212,44 @@ get_task_queue() {
     done
 }
 
-# LINE 1: Model (bg_1) → Dir (blue) → Git (green=clean, yellow=dirty)
+# LINE 1: Model (dark) → Context % → Dir (blue) → Git (green=clean, yellow=dirty)
 line1() {
-    local model_display=$(echo "$JSON" | grep -o '"display_name":"[^"]*"' | sed 's/.*"display_name":"//;s/"//')
+    local model_display
+    model_display=$(echo "$JSON" | jq -r '.display_name // empty')
     [[ -z "$model_display" ]] && model_display="Sonnet"
 
-    local git_info=$(get_git_info)
-    local pwd=$(get_pwd)
+    local used_pct
+    used_pct=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0' 2>/dev/null)
+    [[ -z "$used_pct" || "$used_pct" == "null" ]] && used_pct=0
+
+    local ctx_color; ctx_color=$(usage_color "$used_pct")
+    local git_info; git_info=$(get_git_info)
+    local pwd; pwd=$(get_pwd)
 
     local git_color="$GREEN"
     [[ "$git_info" == *"*"* || "$git_info" == *"+"* ]] && git_color="$YELLOW"
 
     echo -ne "${RESET}"
     if [[ -n "$git_info" ]]; then
-        segment "${ICON_MODEL} ${model_display}" "$BG_1"       "$BLUE"       0
-        segment "${ICON_DIR} ${pwd}"             "$BLUE"       "$git_color"
+        segment "${ICON_MODEL} ${model_display}" "$BG_MODEL"  "$ctx_color"  "$FG_MODEL"
+        segment "${ICON_CTX} ${used_pct}%"       "$ctx_color" "$BLUE"
+        segment "${ICON_DIR} ${pwd}"             "$BLUE"      "$git_color"
         segment "${ICON_GIT} ${git_info}"        "$git_color"
     else
-        segment "${ICON_MODEL} ${model_display}" "$BG_1" "$BLUE" 0
+        segment "${ICON_MODEL} ${model_display}" "$BG_MODEL"  "$ctx_color"  "$FG_MODEL"
+        segment "${ICON_CTX} ${used_pct}%"       "$ctx_color" "$BLUE"
         segment "${ICON_DIR} ${pwd}"             "$BLUE"
     fi
     echo -e "${RESET}"
 }
 
-# LINE 2: Usage (base02) → Context % (green/yellow/red)
+# LINE 2: Usage limits as plain gray text (no powerline segments)
 line2() {
-    local used_pct
-    used_pct=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0' 2>/dev/null)
-    [[ -z "$used_pct" || "$used_pct" == "null" ]] && used_pct=0
-
-    local ctx_color; ctx_color=$(usage_color "$used_pct")
     local usage_text; usage_text=$(format_usage)
+    [[ -z "$usage_text" ]] && return
 
-    echo -ne "${RESET}"
-    if [[ -n "$usage_text" ]]; then
-        segment "${ICON_USAGE} ${usage_text}" "$VIOLET" "$ctx_color"
-        segment "${ICON_CTX} ${used_pct}%"   "$ctx_color"
-    else
-        segment "${ICON_CTX} ${used_pct}%"   "$ctx_color"
-    fi
+    echo -ne "\033[38;5;248m"
+    echo -ne " ${ICON_USAGE} ${usage_text}"
     echo -e "${RESET}"
 }
 
@@ -221,7 +260,7 @@ line3() {
     [[ -z "$tasks" ]] && return
 
     while IFS= read -r task; do
-        echo "  $task"
+        echo " $task"
     done <<< "$tasks"
 }
 

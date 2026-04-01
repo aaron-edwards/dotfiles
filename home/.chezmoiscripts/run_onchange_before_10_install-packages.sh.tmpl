@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 {{ $sudo := "sudo " -}}
 {{ if eq .chezmoi.username "root" -}}
@@ -7,25 +8,34 @@
 
 {{ if eq .chezmoi.os "darwin" -}}
 
-brew install {{range .packages -}}
+# Bootstrap Homebrew if not installed
+if ! command -v brew > /dev/null 2>&1; then
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+HOMEBREW_NO_AUTO_UPDATE=1 brew install {{range .packages -}}
 {{if kindIs "string" .}} "{{.}}" {{end -}}
 {{if and (kindIs "map" .) (hasKey . "brew")}} "{{get . "brew"}}" {{end -}}
 {{- end}}
 
-brew install --cask {{range .packages -}}
-{{if and (kindIs "map" .) (hasKey . "cask")}} "{{get . "cask"}}" {{end -}}
-{{- end}}
+{{ $casks := list -}}
+{{ range .packages -}}
+{{   if and (kindIs "map" .) (hasKey . "cask") -}}
+{{     $casks = append $casks (get . "cask") -}}
+{{   end -}}
+{{ end -}}
+{{ if $casks -}}
+HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask {{ range $casks }}"{{.}}" {{ end }}
+{{ end -}}
 
 {{ else if eq .chezmoi.os "linux" -}}
 
-
-{{$sudo}}pacman -S --needed {{range .packages -}}
+{{$sudo}}pacman -S --needed --noconfirm {{range .packages -}}
 {{if kindIs "string" .}} "{{.}}" {{end -}}
 {{if and (kindIs "map" .) (hasKey . "pacman")}} "{{get . "pacman"}}" {{end -}}
 {{- end}}
 
-
-yay -S --needed {{range .packages -}}
+yay -S --needed --noconfirm --answerdiff=None --answerclean=None {{range .packages -}}
 {{if and (kindIs "map" .) (hasKey . "aur")}} "{{get . "aur"}}" {{end -}}
 {{- end}}
 
@@ -34,3 +44,22 @@ yay -S --needed {{range .packages -}}
 echo "Unknown OS"
 
 {{ end -}}
+
+# Change default shell to zsh if needed
+if [ "$SHELL" != "/bin/zsh" ]; then
+    if [ -t 0 ]; then
+        printf "Change default shell to /bin/zsh? [y/N] "
+        read -r answer
+        case "$answer" in
+            [yY])
+                {{ if eq .chezmoi.os "linux" -}}
+                # Ensure /bin/zsh is in /etc/shells
+                grep -qx /bin/zsh /etc/shells || echo /bin/zsh | {{$sudo}}tee -a /etc/shells
+                {{ end -}}
+                chsh -s /bin/zsh
+                ;;
+        esac
+    else
+        echo "Skipping shell change (no interactive terminal)"
+    fi
+fi
