@@ -1,4 +1,6 @@
-{{- $machineType := promptChoiceOnce . "machine_type" "Machine type" (list "personal" "work") "personal" -}}
+{{- $mtShort := promptChoiceOnce . "machine_type" "Machine type (p=personal, w=work)" (list "p" "w") "p" -}}
+{{- $machineType := "personal" -}}
+{{- if eq $mtShort "w" -}}{{ $machineType = "work" }}{{- end -}}
 {{- $email := "edwards.aaronmark@gmail.com" -}}
 {{- $gitUsername := "aaron-edwards" -}}
 {{- if eq $machineType "work" -}}
