@@ -1,7 +1,16 @@
+{{- $machineType := promptChoiceOnce . "machine_type" "Machine type" (list "personal" "work") "personal" -}}
+{{- $email := "edwards.aaronmark@gmail.com" -}}
+{{- $gitUsername := "aaron-edwards" -}}
+{{- if eq $machineType "work" -}}
+{{-   $email = promptStringOnce . "email" "Work email" $email -}}
+{{-   $gitUsername = promptStringOnce . "git_username" "Git username" $gitUsername -}}
+{{- end -}}
+
 [data]
   name = "Aaron Edwards"
-  email = "edwards.aaronmark@gmail.com"
-  git_username = "aaron-edwards"
+  email = {{ $email | quote }}
+  git_username = {{ $gitUsername | quote }}
+  machine_type = {{ $machineType | quote }}
 
   packages = [
     { aur = "asdf-vm", brew = "asdf" },

@@ -7,6 +7,9 @@ printf "\033[0;32mInstalling packages\033[0m\n"
 {{   $sudo = "" -}}
 {{ end -}}
 
+{{- /* Map packages may set scope = "personal" or "work" to limit install. Strings + maps without scope install on both. */ -}}
+{{- $mt := .machine_type -}}
+
 {{ if eq .chezmoi.os "darwin" -}}
 
 # Bootstrap Homebrew if not installed
@@ -16,12 +19,12 @@ fi
 
 HOMEBREW_NO_AUTO_UPDATE=1 brew install {{range .packages -}}
 {{if kindIs "string" .}} "{{.}}" {{end -}}
-{{if and (kindIs "map" .) (hasKey . "brew")}} "{{get . "brew"}}" {{end -}}
+{{if and (kindIs "map" .) (hasKey . "brew") (or (not (hasKey . "scope")) (eq (get . "scope") $mt))}} "{{get . "brew"}}" {{end -}}
 {{- end}}
 
 {{ $casks := list -}}
 {{ range .packages -}}
-{{   if and (kindIs "map" .) (hasKey . "cask") -}}
+{{   if and (kindIs "map" .) (hasKey . "cask") (or (not (hasKey . "scope")) (eq (get . "scope") $mt)) -}}
 {{     $casks = append $casks (get . "cask") -}}
 {{   end -}}
 {{ end -}}
@@ -33,11 +36,11 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask {{ range $casks }}"{{.}}" {{ end }
 
 {{$sudo}}pacman -S --needed --noconfirm {{range .packages -}}
 {{if kindIs "string" .}} "{{.}}" {{end -}}
-{{if and (kindIs "map" .) (hasKey . "pacman")}} "{{get . "pacman"}}" {{end -}}
+{{if and (kindIs "map" .) (hasKey . "pacman") (or (not (hasKey . "scope")) (eq (get . "scope") $mt))}} "{{get . "pacman"}}" {{end -}}
 {{- end}}
 
 yay -S --needed --noconfirm --answerdiff=None --answerclean=None {{range .packages -}}
-{{if and (kindIs "map" .) (hasKey . "aur")}} "{{get . "aur"}}" {{end -}}
+{{if and (kindIs "map" .) (hasKey . "aur") (or (not (hasKey . "scope")) (eq (get . "scope") $mt))}} "{{get . "aur"}}" {{end -}}
 {{- end}}
 
 {{ else -}}
