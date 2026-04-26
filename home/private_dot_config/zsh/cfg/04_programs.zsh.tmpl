@@ -7,3 +7,13 @@ fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 # initialise completions with ZSH's compinit
 autoload -Uz compinit && compinit
 
+
+{{ if eq .chezmoi.os "darwin" -}}
+export PNPM_HOME="{{ .chezmoi.homeDir }}/Library/pnpm"
+{{ else -}}
+export PNPM_HOME="${XDG_DATA_HOME:-{{ .chezmoi.homeDir }}/.local/share}/pnpm"
+{{ end -}}
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
