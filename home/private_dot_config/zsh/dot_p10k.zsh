@@ -48,7 +48,7 @@
     status
     command_execution_time
     background_jobs
-    asdf
+    mise
   )
 
   if [[ "$OSTYPE" == "darwin"* ]]; then

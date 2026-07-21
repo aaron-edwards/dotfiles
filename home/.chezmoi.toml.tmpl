@@ -15,13 +15,13 @@
   machine_type = {{ $machineType | quote }}
 
   packages = [
-    { aur = "asdf-vm", brew = "asdf" },
     "bitwarden-cli",
     "eza",
     "fd",
     "fzf",
+    "mise",
     "neovim",
-    "gh",
+    { yay ="github-cli", brew = "gh"},
     { aur = "ghostty", cask = "ghostty" },
     "ripgrep",
     "jq",

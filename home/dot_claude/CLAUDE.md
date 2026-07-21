@@ -12,7 +12,6 @@
   - Package manager: brew (macOS) / pacman + yay (Linux)
   - Use `gh` for GitHub operations (not raw `git` for PRs/issues)
   - Use `fd` instead of `find`, `rg` instead of `grep` where possible
-  - Node.js managed via asdf; use `corepack`-provided yarn/pnpm rather than npm where possible
 
   ## Dotfiles (chezmoi)
   Many config files under `~/.config/`, `~/.claude/`, and `~/` are managed by chezmoi.

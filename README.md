@@ -9,7 +9,7 @@
 - Modular config loaded via [antidote](https://getantidote.github.io/) plugin manager
 - Plugins: powerlevel10k prompt, zsh-autosuggestions, zsh-completions
 - Aliases: `ls` → eza, `ll` → eza detailed listing
-- Integrations: zoxide (smart `cd`), fzf (fuzzy finder), asdf (runtime version manager), ghostty shell integration
+- Integrations: zoxide (smart `cd`), fzf (fuzzy finder), ghostty shell integration
 
 ![Zsh status line](assets/zsh-status.png)
 
@@ -34,7 +34,7 @@ A run-on-change script installs system packages via `pacman`/`yay` on Linux or `
 - **neovim** — editor
 - **ghostty** — terminal
 - **zsh** + **zsh-antidote** — shell and plugin manager
-- **asdf** — runtime version manager
+- **mise** — runtime version manager
 - **eza** — modern `ls`
 - **fd** — fast file finder
 - **fzf** — fuzzy finder
@@ -62,8 +62,7 @@ On first apply, chezmoi will:
 1. Install system packages
 2. Apply git and macOS configuration
 3. Bootstrap Neovim plugins (lazy.nvim)
-4. Install Node.js LTS via asdf with corepack enabled
-5. Print a checklist of remaining manual steps
+4. Print a checklist of remaining manual steps
 
 ## How It Works
 
