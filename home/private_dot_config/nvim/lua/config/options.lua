@@ -49,3 +49,9 @@ opt.updatetime = 250        -- ms to wait for trigger an event
 -----------------------------------------------------------
 g.loaded_netrwPlugin  = 1   -- replaced by snacks explorer
 
+-- No remote plugins use these language providers
+g.loaded_python3_provider = 0
+g.loaded_node_provider    = 0
+g.loaded_perl_provider    = 0
+g.loaded_ruby_provider    = 0
+
