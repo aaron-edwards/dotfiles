@@ -1,10 +1,11 @@
 --[[
   Syntax highlighting using tree-sitter grammars.
-  Parsers: lua, vim, vimdoc, bash, python, typescript, tsx, javascript.
+  Parsers: lua, vim, vimdoc, bash, python, typescript, tsx, javascript, json,
+  yaml, toml, html, css, regex. Does not support lazy-loading.
 ]]
 return {
 	"nvim-treesitter/nvim-treesitter",
-	event = "BufReadPost",
+	lazy = false,
 	build = ":TSUpdate",
 	config = function()
 		require("nvim-treesitter").install({
@@ -16,6 +17,12 @@ return {
 			"typescript",
 			"tsx",
 			"javascript",
+			"json",
+			"yaml",
+			"toml",
+			"html",
+			"css",
+			"regex",
 		})
 
 		vim.api.nvim_create_autocmd("FileType", {

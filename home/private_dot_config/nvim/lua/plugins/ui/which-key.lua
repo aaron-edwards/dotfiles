@@ -17,6 +17,7 @@ return {
 			{ "<leader>a", group = "AI" },
 			{ "<leader>c", group = "code" },
 			{ "<leader>t", group = "test" },
+			{ "<leader>s", group = "search" },
 		})
 	end,
 }

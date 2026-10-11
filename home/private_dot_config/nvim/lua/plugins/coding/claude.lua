@@ -1,11 +1,9 @@
 --[[
   Integrates Claude Code CLI into Neovim. Supports terminal session, sending
   buffers/selections to Claude, and diff review (accept/deny) in a new tab.
-  Pinned to a branch that fixes leftover diff windows not closing on accept/reject.
 ]]
 return {
 	"coder/claudecode.nvim",
-	branch = "nvim-integration-xg1c",
 	dependencies = { "folke/snacks.nvim" },
 	opts = {
 		diff_opts = {
@@ -24,7 +22,7 @@ return {
 			"<leader>as",
 			"<cmd>ClaudeCodeTreeAdd<cr>",
 			desc = "Add file",
-			ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+			ft = { "snacks_picker_list" },
 		},
 		-- Diff management
 		{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },

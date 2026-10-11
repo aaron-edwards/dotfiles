@@ -1,3 +1,22 @@
+local function pick_chezmoi()
+  local files = require("chezmoi.commands").list({
+    args = { "--path-style", "absolute", "--include", "files", "--exclude", "externals" },
+  })
+  local items = {}
+  for _, file in ipairs(files) do
+    table.insert(items, { text = file, file = file })
+  end
+  Snacks.picker.pick({
+    title = "Chezmoi",
+    items = items,
+    format = "file",
+    confirm = function(picker, item)
+      picker:close()
+      require("chezmoi.commands").edit({ targets = { item.text }, args = { "--watch" } })
+    end,
+  })
+end
+
 return {
   {
     -- highlighting for chezmoi files template files
@@ -26,9 +45,6 @@ return {
         on_open = true,
         on_apply = true,
         on_watch = false,
-      },
-      telescope = {
-        select = { "<CR>" },
       },
     },
     init = function()

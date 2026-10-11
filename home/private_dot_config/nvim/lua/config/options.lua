@@ -6,10 +6,6 @@ local opt = vim.opt   -- Set options (global/buffer/windows-scoped)
 -----------------------------------------------------------
 opt.mouse = 'a'                       -- Enable mouse support
 opt.clipboard = 'unnamedplus'         -- Copy/paste to system clipboard
-if vim.fn.has("osx") == 1 then
-elseif vim.fn.has("unix") then
-  g.clipboard = 'wl-copy'
-end
 opt.swapfile = false                  -- Don't use swapfile
 opt.undofile = true                   -- Persistent undo across sessions
 
@@ -51,6 +47,5 @@ opt.updatetime = 250        -- ms to wait for trigger an event
 -----------------------------------------------------------
 -- Disable unused built-in plugins (startup performance)
 -----------------------------------------------------------
-g.loaded_matchit      = 1   -- replaced by treesitter % matching
 g.loaded_netrwPlugin  = 1   -- replaced by snacks explorer
 

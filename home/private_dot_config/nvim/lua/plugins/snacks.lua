@@ -161,6 +161,35 @@ return {
 			end,
 			desc = "Git Log File",
 		},
+		-- search
+		{
+			"<leader>sh",
+			function()
+				Snacks.picker.help()
+			end,
+			desc = "Help Pages",
+		},
+		{
+			"<leader>sk",
+			function()
+				Snacks.picker.keymaps()
+			end,
+			desc = "Keymaps",
+		},
+		{
+			"<leader>sd",
+			function()
+				Snacks.picker.diagnostics()
+			end,
+			desc = "Diagnostics",
+		},
+		{
+			"<leader>ss",
+			function()
+				Snacks.picker.lsp_workspace_symbols()
+			end,
+			desc = "Workspace Symbols",
+		},
 		-- lazygit
 		{
 			"<leader>gg",

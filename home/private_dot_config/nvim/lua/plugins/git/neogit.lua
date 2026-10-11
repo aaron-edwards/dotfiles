@@ -1,7 +1,7 @@
 --[[
   Magit-style git interface. Full staging, committing, branching, rebasing
   and more in a native Neovim UI. Complements lazygit (<leader>gg) for
-  quick operations vs neogit (<leader>gN) for detailed workflow.
+  quick operations vs neogit (<leader>gn) for detailed workflow.
 ]]
 return {
   "NeogitOrg/neogit",

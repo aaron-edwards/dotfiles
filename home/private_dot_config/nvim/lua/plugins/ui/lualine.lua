@@ -20,10 +20,10 @@ return {
 			local opts = {
 				options = {
 					globalstatus = true,
-					theme = "solarized_light",
-				},
-				disabled_filetypes = {
-					statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" },
+					theme = "auto",
+					disabled_filetypes = {
+						statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" },
+					},
 				},
 			}
 			return opts

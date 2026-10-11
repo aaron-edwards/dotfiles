@@ -32,6 +32,12 @@ return {
 				"prettier", -- JS / TS / JSON / CSS / HTML
 			},
 		},
+		config = function(_, opts)
+			local mti = require("mason-tool-installer")
+			mti.setup(opts)
+			-- Its own VimEnter trigger has already fired by VeryLazy
+			mti.run_on_start()
+		end,
 	},
 }
 

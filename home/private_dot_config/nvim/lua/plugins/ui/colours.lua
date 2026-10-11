@@ -1,5 +1,5 @@
 --[[
-  Colorscheme. Using the spring variant with a light background.
+  Colorscheme. Light/dark follows the terminal background.
 ]]
 return {
 	{
@@ -9,8 +9,6 @@ return {
 		---@type solarized.config
 		opts = {},
 		config = function(_, opts)
-			vim.o.termguicolors = true
-			vim.o.background = "light"
 			require("solarized").setup(opts)
 			vim.cmd.colorscheme("solarized")
 		end,
