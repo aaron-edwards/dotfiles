@@ -3,7 +3,7 @@
   ## About Me
   - Full-stack developer working across macOS and Linux (Arch)
   - Primary editor: Neovim, vs-code, IntelliJ; terminal: Ghostty
-  - Runtime versions managed via asdf
+  - Runtime versions managed via mise
 
   ## Code Style Preferences
   - 2-space indentation (spaces, not tabs)
@@ -25,5 +25,5 @@
   - Prefer editing existing files over creating new ones
 
   ## Things to Never Do
-  - Do not add `npm install -g` — use asdf/corepack instead
+  - Do not add `npm install -g` — use mise (`mise use -g npm:<pkg>`) or corepack instead
   - Do not add comments explaining what code does unless the logic is genuinely non-obvious

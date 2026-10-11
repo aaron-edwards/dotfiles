@@ -51,15 +51,15 @@ A run-on-change script installs system packages via `pacman`/`yay` on Linux or `
 - **zoxide** — smart directory jumping
 - **gh** — GitHub CLI
 - **jq** — JSON processor
+- **bitwarden-cli** — password manager CLI
+- **wl-clipboard** — Wayland clipboard tools (Linux only)
 - **Monaspace Nerd Font** — font
+
+On first install it also offers to change your default shell to zsh.
 
 ### Git
 - Global config (name, email, rebase, prune, etc.) applied via configure script
 - Global `.gitignore` at `~/.gitignore_global` covering `.DS_Store`, swap files, `.env`, logs
-
-### Node.js (via asdf)
-- Latest LTS version installed automatically on first run
-- Corepack enabled (provides `yarn`/`pnpm` shims)
 
 ## Setup
 
@@ -67,15 +67,30 @@ A run-on-change script installs system packages via `pacman`/`yay` on Linux or `
 chezmoi init --apply git@github.com:aaron-edwards/dotfiles.git
 ```
 
+On first init, chezmoi asks:
+- **Machine type** — `p` (personal) or `w` (work); work also asks for your email and Git username
+- **Install KDE Plasma theming** — Linux only
+
+Answers are saved to `~/.config/chezmoi/chezmoi.toml`. To change one later, edit that file or re-run init with the new answer, e.g. `chezmoi init --promptBool "Install KDE Plasma theming=false"`.
+
 On first apply, chezmoi will:
 1. Install system packages
 2. Apply git and macOS configuration
 3. Bootstrap Neovim plugins (lazy.nvim)
-4. Print a checklist of remaining manual steps
+4. Apply the KDE colour scheme and GTK theme (if enabled)
+5. Print a checklist of remaining manual steps
 
 ## How It Works
 
 - **Templates** (`.tmpl` files) handle OS- and machine-specific config
 - **`private_` prefix** marks sensitive files for chezmoi encryption
 - **`run_onchange_before_`** scripts run only when their content changes
+- **`run_onchange_after_`** scripts run after files are applied, when their content changes — the KDE script embeds hashes of the colour scheme and GTK theme so it re-runs when either changes
 - **`run_once_after_`** scripts run once on a new machine (bootstrapping)
+- **`.chezmoiignore`** is a template, so files are skipped based on options like `kde`
+
+The KDE script needs a running Plasma session; when run without one (e.g. over SSH) it skips itself. Changing the colour scheme or accent in System Settings also resets the dark inactive header, because Plasma skips that group. In either case, re-apply with:
+
+```sh
+chezmoi execute-template < "$(chezmoi source-path)/.chezmoiscripts/run_onchange_after_50_apply-kde-theme.sh.tmpl" | bash
+```
