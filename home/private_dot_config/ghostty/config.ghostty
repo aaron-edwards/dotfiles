@@ -24,3 +24,5 @@ keybind = ctrl+shift+arrow_up=new_split:up
 keybind = ctrl+shift+arrow_down=new_split:down
 keybind = ctrl+shift+arrow_left=new_split:left
 keybind = ctrl+shift+arrow_right=new_split:right
+
+keybind = ctrl+shift+r=prompt_tab_title
