@@ -13,6 +13,9 @@ home/                              # chezmoi root (set by .chezmoiroot)
 │   ├── CLAUDE.md                  # Global Claude Code instructions
 │   ├── private_settings.json      # Status line config
 │   └── statusline/                # Custom powerline-style status scripts
+├── dot_local/share/               # → ~/.local/share/ (only when kde = true)
+│   ├── color-schemes/             # Breeze Twilight KDE colour scheme
+│   └── themes/Breeze-Twilight/    # GTK3 theme: Breeze + headerbar fixes for dark headers
 ├── private_dot_config/            # → ~/.config/
 │   ├── ghostty/                   # Terminal config
 │   ├── nvim/                      # Neovim (lazy.nvim, Lua)
@@ -30,10 +33,12 @@ home/                              # chezmoi root (set by .chezmoiroot)
 **Template data** comes from `.chezmoi.toml.tmpl`. Key variables:
 - `.chezmoi.os` — `"darwin"` or `"linux"`
 - `.chezmoi.username`, `.name`, `.email`, `.git_username`
+- `.kde` — `true` to install KDE Plasma theming (prompted on Linux only, always `false` on macOS)
 - `.packages` — list of packages; each entry is either a plain string or a map with OS-specific keys (`brew`, `cask`, `aur`)
 
 **Script triggers:**
 - `run_onchange_before_` — runs before other scripts, only when its content hash changes
+- `run_onchange_after_50_apply-kde-theme.sh.tmpl` — applies the colour scheme and GTK theme; embeds hashes of both so it re-runs when either changes
 
 ## Package System
 

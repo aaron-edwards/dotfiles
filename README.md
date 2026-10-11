@@ -18,6 +18,15 @@
 - Light/dark Selenized theme
 - Keybindings for split creation and navigation
 
+### Desktop — KDE Plasma (Linux, optional)
+Only installed when `kde = true` (prompted on Linux during `chezmoi init`, always off on macOS).
+
+- **Breeze Twilight** colour scheme — light windows with dark headers and panels; unfocused windows get a darker header so focus is easy to see
+- **Breeze-Twilight GTK theme** — Breeze plus fixes so headerbar buttons in GTK3 apps (e.g. Firefox, CachyOS Hello) stay readable on the dark header
+- A run-on-change script applies both, and re-runs whenever either file changes
+
+![Breeze Twilight colour scheme](assets/kde-breeze-twilight.png)
+
 ### Editor — Neovim
 Lua-based config using [lazy.nvim](https://github.com/folke/lazy.nvim).
 

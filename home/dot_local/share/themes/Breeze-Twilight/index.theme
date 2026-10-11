@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Breeze Twilight
+Comment=Breeze with headerbar buttons fixed for dark headers
+
+[X-GNOME-Metatheme]
+GtkTheme=Breeze-Twilight

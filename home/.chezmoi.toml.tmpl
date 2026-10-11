@@ -7,12 +7,17 @@
 {{-   $email = promptStringOnce . "email" "Work email" $email -}}
 {{-   $gitUsername = promptStringOnce . "git_username" "Git username" $gitUsername -}}
 {{- end -}}
+{{- $kde := false -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{-   $kde = promptBoolOnce . "kde" "Install KDE Plasma theming" true -}}
+{{- end }}
 
 [data]
   name = "Aaron Edwards"
   email = {{ $email | quote }}
   git_username = {{ $gitUsername | quote }}
   machine_type = {{ $machineType | quote }}
+  kde = {{ $kde }}
 
   packages = [
     "bitwarden-cli",

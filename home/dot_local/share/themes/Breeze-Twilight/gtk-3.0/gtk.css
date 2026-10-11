@@ -1,0 +1,37 @@
+@import url("file:///usr/share/themes/Breeze/gtk-3.0/gtk.css");
+
+/* Breeze styles headerbar buttons with the Button colour group, which is light in Twilight while the header is dark */
+
+headerbar button {
+  -gtk-icon-style: symbolic;
+}
+
+headerbar .linked button {
+  color: @theme_titlebar_foreground_breeze;
+  background: mix(@theme_titlebar_background_breeze, @theme_titlebar_foreground_breeze, 0.08);
+  border-color: alpha(@theme_titlebar_foreground_breeze, 0.2);
+}
+
+headerbar .linked button:hover:not(:checked):not(:active) {
+  background: mix(@theme_titlebar_background_breeze, @theme_titlebar_foreground_breeze, 0.08);
+}
+
+headerbar .linked button:checked,
+headerbar button:checked {
+  color: @theme_titlebar_foreground_breeze;
+  background: alpha(@theme_button_decoration_focus_breeze, 0.25);
+  border-color: alpha(@theme_button_decoration_focus_breeze, 0.6);
+}
+
+headerbar .linked button:backdrop {
+  color: @theme_titlebar_foreground_backdrop_breeze;
+  background: mix(@theme_titlebar_background_backdrop_breeze, @theme_titlebar_foreground_backdrop_breeze, 0.06);
+  border-color: alpha(@theme_titlebar_foreground_backdrop_breeze, 0.15);
+}
+
+headerbar .linked button:backdrop:checked,
+headerbar button:backdrop:checked {
+  color: @theme_titlebar_foreground_backdrop_breeze;
+  background: alpha(@theme_titlebar_foreground_backdrop_breeze, 0.15);
+  border-color: alpha(@theme_titlebar_foreground_backdrop_breeze, 0.25);
+}

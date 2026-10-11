@@ -4,3 +4,8 @@
 
 # Ignore lazy-lock.json (neovim lazy.nvim lockfile) anywhere
 **/lazy-lock.json
+
+{{ if not .kde }}
+.local/share/color-schemes
+.local/share/themes/Breeze-Twilight
+{{ end }}

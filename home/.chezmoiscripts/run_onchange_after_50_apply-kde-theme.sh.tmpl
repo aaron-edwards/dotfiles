@@ -1,0 +1,38 @@
+{{ if .kde -}}
+#!/usr/bin/env bash
+# colors hash: {{ include "dot_local/share/color-schemes/Breeze Twilight.colors" | sha256sum }}
+# gtk hash: {{ include "dot_local/share/themes/Breeze-Twilight/gtk-3.0/gtk.css" | sha256sum }}
+set -euo pipefail
+
+if ! command -v plasma-apply-colorscheme >/dev/null || [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+  printf "\033[0;33mSkipping KDE theme: no Plasma session\033[0m\n"
+  exit 0
+fi
+
+printf "\033[0;32mApplying KDE theme\033[0m\n"
+
+scheme="Breeze Twilight"
+file="$HOME/.local/share/color-schemes/$scheme.colors"
+qdbus=$(command -v qdbus6 || command -v qdbus)
+
+# The accent is baked into the scheme; a System Settings accent would also recolour links
+kwriteconfig6 --file kdeglobals --group General --key AccentColor --delete
+
+# Re-applying the active scheme is a no-op, so switch away first
+plasma-apply-colorscheme BreezeDark >/dev/null
+plasma-apply-colorscheme "$scheme" >/dev/null
+
+# plasma-apply-colorscheme does not copy the nested [Colors:Header][Inactive] group
+awk '/^\[Colors:Header\]\[Inactive\]$/{s=1;next} /^\[/{s=0} s && /=/' "$file" |
+  while IFS='=' read -r key value; do
+    kwriteconfig6 --file kdeglobals --group 'Colors:Header' --group Inactive --key "$key" --notify "$value"
+  done
+
+"$qdbus" org.kde.KWin /KWin reconfigure >/dev/null
+
+# gtkconfig caches kdeglobals, so reload it before regenerating the GTK colours
+"$qdbus" org.kde.kded6 /kded unloadModule gtkconfig >/dev/null
+"$qdbus" org.kde.kded6 /kded loadModule gtkconfig >/dev/null
+"$qdbus" org.kde.kded6 /GtkConfig setGtkTheme Breeze-Twilight
+kwriteconfig6 --file kdeglobals --group General --key ColorScheme --notify "$scheme"
+{{ end -}}
