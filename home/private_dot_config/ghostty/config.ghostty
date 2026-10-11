@@ -4,9 +4,13 @@ theme = light:Selenized Light,dark:Selenized Dark
 unfocused-split-opacity=.85
 unfocused-split-fill=#002b36
 split-divider-color=#009c8f
-window-decoration=server
+window-decoration=client
+window-theme=ghostty
+window-titlebar-background=#292c30
+window-titlebar-foreground=#fcfcfc
 
-gtk-titlebar-style=native
+gtk-titlebar-style=tabs
+gtk-toolbar-style=flat
 gtk-wide-tabs=false
 
 macos-titlebar-style=transparent
