@@ -1,0 +1,11 @@
+#!/bin/sh
+# mise config hash: {{ include "private_dot_config/mise/config.toml" | sha256sum }}
+set -e
+
+if ! command -v mise > /dev/null 2>&1; then
+    echo "mise not found, skipping tool install"
+    exit 0
+fi
+
+printf "\033[0;32mInstalling mise tools\033[0m\n"
+mise install --yes

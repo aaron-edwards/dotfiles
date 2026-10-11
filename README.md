@@ -57,6 +57,11 @@ A run-on-change script installs system packages via `pacman`/`yay` on Linux or `
 
 On first install it also offers to change your default shell to zsh.
 
+### Runtimes — mise
+- Activated in zsh via `mise activate`
+- Global tools in `~/.config/mise/config.toml`: Node.js LTS, with Corepack enabled (provides `pnpm`/`yarn`)
+- A run-on-change script runs `mise install` whenever that config changes
+
 ### Git
 - Global config (name, email, rebase, prune, etc.) applied via configure script
 - Global `.gitignore` at `~/.gitignore_global` covering `.DS_Store`, swap files, `.env`, logs
@@ -77,8 +82,9 @@ On first apply, chezmoi will:
 1. Install system packages
 2. Apply git and macOS configuration
 3. Bootstrap Neovim plugins (lazy.nvim)
-4. Apply the KDE colour scheme and GTK theme (if enabled)
-5. Print a checklist of remaining manual steps
+4. Install mise tools (Node.js LTS)
+5. Apply the KDE colour scheme and GTK theme (if enabled)
+6. Print a checklist of remaining manual steps
 
 ## How It Works
 

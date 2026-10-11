@@ -18,6 +18,7 @@ home/                              # chezmoi root (set by .chezmoiroot)
 │   └── themes/Breeze-Twilight/    # GTK3 theme: Breeze + headerbar fixes for dark headers
 ├── private_dot_config/            # → ~/.config/
 │   ├── ghostty/                   # Terminal config
+│   ├── mise/                      # Global mise tools (Node LTS + corepack)
 │   ├── nvim/                      # Neovim (lazy.nvim, Lua)
 │   └── zsh/                       # Modular zsh config (cfg/00–04)
 └── dot_zshenv                     # Sets ZDOTDIR, EDITOR
@@ -38,6 +39,7 @@ home/                              # chezmoi root (set by .chezmoiroot)
 
 **Script triggers:**
 - `run_onchange_before_` — runs before other scripts, only when its content hash changes
+- `run_onchange_after_45_install-mise-tools.sh.tmpl` — runs `mise install`; embeds a hash of the mise config so it re-runs when tools change
 - `run_onchange_after_50_apply-kde-theme.sh.tmpl` — applies the colour scheme and GTK theme; embeds hashes of both so it re-runs when either changes
 
 ## Package System
